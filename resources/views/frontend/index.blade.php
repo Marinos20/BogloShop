@@ -12,11 +12,11 @@
 
 
     <!-- testimonial area start -->
-    {{-- @include('layouts.inc.frontend.home.testimonial') --}}
+    - @include('layouts.inc.frontend.home.testimonial') 
     <!-- testimonial area end -->
 
     <!-- blog area start -->
-   {{--  @include('layouts.inc.frontend.home.blog')--}}
+     @include('layouts.inc.frontend.home.blog')
     <!-- blog area end -->
 
     <!-- feature area start -->

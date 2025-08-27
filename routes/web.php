@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Frontend\AuthController as FrontendAuthController;
+use App\Http\Controllers\Frontend\BlogController as FrontendBlogController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\FrontendController;
@@ -37,23 +39,37 @@ Route::get('/condition', [FrontendController::class, 'condition'])->name('condit
 Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
+// ==========================
+// BLOG PUBLIC
+// ==========================
+Route::get('/blog', [FrontendBlogController::class, 'index'])->name('blog.index');       // Liste des articles
+Route::get('/blog/{slug}', [FrontendBlogController::class, 'show'])->name('blog.show');   // Détail article
+
+// ==========================
+// AUTH GUEST
+// ==========================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [FrontendAuthController::class, 'login'])->name('login');
     Route::get('/register', [FrontendAuthController::class, 'register'])->name('register');
 });
 
+// ==========================
+// WISHLIST / CART
+// ==========================
 Route::get('/wishlist', [WishlistController::class, 'index']);
 Route::get('/cart', [CartController::class, 'index']);
 
-// Langue / Devise
+// ==========================
+// LANGUE / DEVISE
+// ==========================
 Route::get('/lang/{locale}', [SettingsController::class, 'switchLang'])->name('lang.switch');
 Route::get('/currency/{currency}', [SettingsController::class, 'switchCurrency'])->name('currency.switch');
 
 // ==========================
 // ROUTES AUTHENTIFIÉES
 // ==========================
-
 Route::middleware(['auth'])->group(function () {
+
     Route::middleware('verified')->group(function () {
         Route::get('/profile', [ProfileController::class, 'index']);
         Route::get('/track-order/{tracking_no}', [ProfileController::class, 'track'])->name('track_order');
@@ -76,7 +92,6 @@ Route::middleware(['auth'])->group(function () {
 // ==========================
 // ADMIN
 // ==========================
-
 Route::prefix('admin')->group(function () {
 
     Route::middleware(['auth', 'is_admin', 'admin_device'])->group(function () {
@@ -95,10 +110,10 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/invoice/{id}', [OrderController::class, 'viewInvoice'])->name('order.invoice');
 
-        // BLOG via Livewire
-        Route::get('/blog', fn() => view('admin.blog.index'))->name('admin.blog.index');
-        Route::get('/blog/create', fn() => view('admin.blog.create'))->name('admin.blog.create');
-        Route::get('/blog/edit/{post}', fn($post) => view('admin.blog.edit', ['post' => $post]))->name('admin.blog.edit');
+        // BLOG via BlogController + Livewire (ADMIN)
+        Route::get('/blog', [AdminBlogController::class, 'index'])->name('admin.blog.index');
+        Route::get('/blog/create', [AdminBlogController::class, 'create'])->name('admin.blog.create');
+        Route::get('/blog/edit/{post}', [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
 
         // Logout admin
         Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');

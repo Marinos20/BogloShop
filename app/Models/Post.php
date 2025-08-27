@@ -18,6 +18,9 @@ class Post extends Model
         'thumbnail',
         'is_published',
         'published_at',
+        'meta_title',
+        'meta_keyword',
+        'meta_description',
     ];
 
     protected $casts = [
@@ -25,6 +28,7 @@ class Post extends Model
         'published_at' => 'datetime',
     ];
 
+    // Relation avec User (auteur du post)
     public function author()
     {
         return $this->belongsTo(User::class, 'user_id');

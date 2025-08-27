@@ -16,11 +16,20 @@ class Index extends Component
 
     protected $paginationTheme = 'tailwind';
 
+    // Placeholder si pas d'article
+    public function placeholder()
+    {
+        $name = "Posts";
+        return view('admin.placeholder.index-table', compact('name'));
+    }
+
+    // Préparer la suppression
     public function deletePost(Post $post)
     {
         $this->post = $post;
     }
 
+    // Supprimer l'article et son image
     public function destroy()
     {
         if ($this->post->thumbnail && File::exists('storage/uploads/blog/' . $this->post->thumbnail)) {
@@ -29,11 +38,12 @@ class Index extends Component
 
         $this->post->delete();
 
-        session()->flash('message', 'Post deleted');
+        session()->flash('message', 'Post supprimé avec succès.');
 
         $this->dispatch('close-modal');
     }
 
+    // Mettre à jour le statut de publication
     public function updateStatus($id)
     {
         $post = Post::select(['id', 'is_published'])->find($id);
@@ -53,9 +63,11 @@ class Index extends Component
             'thumbnail',
             'is_published',
             'published_at',
-        ])->orderBy('id', 'DESC')->paginate(10);
+        ])
+        ->orderBy('id', 'DESC')
+        ->paginate(10);
 
-        $this->none = "No Blog Post Added Yet";
+        $this->none = "Aucun article de blog ajouté pour l’instant.";
 
         return view('livewire.admin.blog.index', compact('posts'));
     }
