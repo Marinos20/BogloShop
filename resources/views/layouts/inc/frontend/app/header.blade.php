@@ -114,6 +114,8 @@
                               </li>
                                <li><a href="{{ url('contact') }}">Contact</a></li>
                                <li><a href="{{ url('service') }}">Service</a></li>
+                               <!-- ✅ Nouveau lien Blog -->
+                               <li><a href="{{ route('blog.index') }}">Blog</a></li>
                             </ul>
                          </nav>
                       </div>

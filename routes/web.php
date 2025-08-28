@@ -42,8 +42,8 @@ Route::post('/contact', [ContactController::class, 'send'])->name('contact.send'
 // ==========================
 // BLOG PUBLIC
 // ==========================
-Route::get('/blog', [FrontendBlogController::class, 'index'])->name('blog.index');       // Liste des articles
-Route::get('/blog/{slug}', [FrontendBlogController::class, 'show'])->name('blog.show');   // Détail article
+Route::get('/blog', [FrontendBlogController::class, 'index'])->name('blog.index');       // Liste des articles avec pagination
+Route::get('/blog/{slug}', [FrontendBlogController::class, 'show'])->name('blog.show');  // Détail article
 
 // ==========================
 // AUTH GUEST
