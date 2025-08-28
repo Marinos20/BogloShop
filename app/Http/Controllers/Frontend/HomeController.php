@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Post; // 
+use App\Models\Post;
+use App\Models\Testimonial; // ajouter le modèle Testimonial
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -18,10 +19,15 @@ class HomeController extends Controller
 
         $posts = Post::where('is_published', 1)
             ->latest()
-            ->take(6) // tu peux changer le nombre
+            ->take(6)
             ->get();
 
-        return view('frontend.index', compact('categories', 'posts'));
+        // Récupérer les témoignages validés
+        $testimonials = Testimonial::with('user')
+                                   ->where('is_approved', true)
+                                   ->latest()
+                                   ->get();
+
+        return view('frontend.index', compact('categories', 'posts', 'testimonials'));
     }
 }
-

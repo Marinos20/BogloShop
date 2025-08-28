@@ -8,42 +8,41 @@ use Illuminate\Support\Facades\Auth;
 
 class TestimonialController extends Controller
 {
-    // Assure que l'utilisateur est connecté pour certaines actions
     public function __construct()
     {
         $this->middleware('auth')->only(['create', 'store']);
     }
 
-    // Afficher tous les témoignages (page publique)
     public function index()
     {
-        $testimonials = Testimonial::latest()->get();
-        return view('testimonials.index', compact('testimonials'));
+        $testimonials = Testimonial::with('user')
+                                   ->where('is_approved', true)
+                                   ->latest()
+                                   ->get();
+
+        return view('frontend.testimonials.index', compact('testimonials'));
     }
 
-    // Formulaire pour créer un témoignage (utilisateur connecté)
     public function create()
     {
-        return view('testimonials.create');
+        return view('frontend.testimonials.create');
     }
 
-    // Enregistrer un nouveau témoignage
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'message' => 'required|string',
-            'rating' => 'required|integer|min:1|max:5',
+            'message' => 'required|string|max:500',
+            'rating'  => 'required|integer|min:1|max:5',
         ]);
 
         Testimonial::create([
-            'user_id' => Auth::id(),
-            'title' => $request->title,
-            'message' => $request->message,
-            'rating' => $request->rating,
+            'user_id'     => Auth::id(),
+            'message'     => $request->message,
+            'rating'      => $request->rating,
+            'is_approved' => false,
         ]);
 
         return redirect()->route('testimonials.index')
-                         ->with('success', 'Merci ! Votre témoignage a été publié.');
+                         ->with('success', 'Merci ! Votre témoignage a été soumis et sera publié après validation.');
     }
 }

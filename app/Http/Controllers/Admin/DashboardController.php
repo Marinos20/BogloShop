@@ -7,7 +7,8 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
-use App\Models\Post; // Ajout du modèle Post
+use App\Models\Post;
+use App\Models\Testimonial;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $todayDate = Carbon::now()->format('Y-m-d'); // Corrigé pour la comparaison
+        $todayDate = Carbon::now()->format('Y-m-d');
         $thisMonth = Carbon::now()->month;
         $thisYear = Carbon::now()->year;
 
@@ -32,6 +33,9 @@ class DashboardController extends Controller
         // Total des posts de blog
         $total_posts = Post::count();
 
+        // Total des témoignages
+        $total_testimonials = Testimonial::count();
+
         return view('admin.dashboard', [
             'total_product' => $total_product,
             'total_category' => $total_category,
@@ -42,7 +46,8 @@ class DashboardController extends Controller
             'today_orders' => $today_orders,
             'thisMonthOrders' => $thisMonthOrders,
             'thisYearOrders' => $thisYearOrders,
-            'total_posts' => $total_posts // On passe la variable à la vue
+            'total_posts' => $total_posts,
+            'total_testimonials' => $total_testimonials 
         ]);
     }
 }

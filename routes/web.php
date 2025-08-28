@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Frontend\AuthController as FrontendAuthController;
 use App\Http\Controllers\Frontend\BlogController as FrontendBlogController;
 use App\Http\Controllers\Frontend\CartController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PaymentController;
 use App\Http\Controllers\Frontend\ProfileController;
 use App\Http\Controllers\Frontend\WishlistController;
+use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
@@ -25,7 +27,6 @@ use Illuminate\Support\Facades\Route;
 // ==========================
 // FRONTEND
 // ==========================
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/home', [FrontendController::class, 'index']);
 Route::get('/collection', [FrontendController::class, 'AllProducts']);
@@ -40,10 +41,19 @@ Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
 // ==========================
+// TESTIMONIALS FRONTEND
+// ==========================
+Route::prefix('')->group(function () {
+    Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
+    Route::get('/testimonials/create', [TestimonialController::class, 'create'])->name('testimonials.create');
+    Route::post('/testimonials', [TestimonialController::class, 'store'])->name('testimonials.store');
+});
+
+// ==========================
 // BLOG PUBLIC
 // ==========================
-Route::get('/blog', [FrontendBlogController::class, 'index'])->name('blog.index');       // Liste des articles avec pagination
-Route::get('/blog/{slug}', [FrontendBlogController::class, 'show'])->name('blog.show');  // Détail article
+Route::get('/blog', [FrontendBlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [FrontendBlogController::class, 'show'])->name('blog.show');
 
 // ==========================
 // AUTH GUEST
@@ -92,35 +102,39 @@ Route::middleware(['auth'])->group(function () {
 // ==========================
 // ADMIN
 // ==========================
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'is_admin', 'admin_device'])->group(function () {
 
-    Route::middleware(['auth', 'is_admin', 'admin_device'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Categories & Subcategories
+    Route::resource('category', CategoryController::class)->only(['index', 'create', 'edit']);
+    Route::resource('subcategory', SubCategoryController::class)->only(['index', 'create', 'edit']);
 
-        // Categories & Subcategories
-        Route::resource('category', CategoryController::class)->only(['index', 'create', 'edit']);
-        Route::resource('subcategory', SubCategoryController::class)->only(['index', 'create', 'edit']);
+    // Produits / Couleurs / Commandes / Users
+    Route::resource('product', ProductController::class);
+    Route::resource('color', ColorController::class);
+    Route::resource('orders', OrderController::class);
+    Route::resource('users', UserController::class);
 
-        // Produits / Couleurs / Commandes / Users
-        Route::resource('product', ProductController::class);
-        Route::resource('color', ColorController::class);
-        Route::resource('orders', OrderController::class);
-        Route::resource('users', UserController::class);
+    Route::get('/invoice/{id}', [OrderController::class, 'viewInvoice'])->name('order.invoice');
 
-        Route::get('/invoice/{id}', [OrderController::class, 'viewInvoice'])->name('order.invoice');
+    // BLOG (ADMIN)
+    Route::get('/blog', [AdminBlogController::class, 'index'])->name('admin.blog.index');
+    Route::get('/blog/create', [AdminBlogController::class, 'create'])->name('admin.blog.create');
+    Route::get('/blog/edit/{post}', [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
 
-        // BLOG via BlogController + Livewire (ADMIN)
-        Route::get('/blog', [AdminBlogController::class, 'index'])->name('admin.blog.index');
-        Route::get('/blog/create', [AdminBlogController::class, 'create'])->name('admin.blog.create');
-        Route::get('/blog/edit/{post}', [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
+    // TESTIMONIALS (ADMIN)
+    Route::resource('testimonials', AdminTestimonialController::class)
+         ->only(['index', 'edit', 'update', 'destroy']);
 
-        // Logout admin
-        Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
-    });
+    // Logout admin
+    Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+});
 
-    Route::middleware('guest')->group(function () {
-        Route::get('/login', [AuthController::class, 'login']);
-        Route::get('/register', [AuthController::class, 'register']);
-    });
+// ==========================
+// ADMIN GUEST
+// ==========================
+Route::prefix('admin')->middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'register']);
 });

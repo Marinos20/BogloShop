@@ -30,6 +30,7 @@
     <hr>
 
     <div class="row">
+        {{-- Products --}}
         <div class="col-md-3">
             <div class="card card-body bg-primary text-white mb-3">
                 <label>Total Products</label>
@@ -37,6 +38,8 @@
                 <a href="{{ route('product.index') }}" class="text-white">Consulter</a>
             </div>
         </div>
+
+        {{-- Categories --}}
         <div class="col-md-3">
             <div class="card card-body bg-success text-white mb-3">
                 <label>Total Categories</label>
@@ -44,6 +47,8 @@
                 <a href="{{ route('category.index') }}" class="text-white">Consulter</a>
             </div>
         </div>
+
+        {{-- Users --}}
         <div class="col-md-3">
             <div class="card card-body bg-warning text-white mb-3">
                 <label>Total Utilisateurs</label>
@@ -51,6 +56,8 @@
                 <a href="{{ route('users.index') }}" class="text-white">Consulter</a>
             </div>
         </div>
+
+        {{-- Orders --}}
         <div class="col-md-3">
             <div class="card card-body bg-danger text-white mb-3">
                 <label>Total Commandes</label>
@@ -58,6 +65,8 @@
                 <a href="{{ route('orders.index') }}" class="text-white">Consulter</a>
             </div>
         </div>
+
+        {{-- This Month Orders --}}
         <div class="col-md-3">
             <div class="card card-body bg-info text-white mb-3">
                 <label>Commandes de ce mois</label>
@@ -65,12 +74,22 @@
                 <a href="{{ route('orders.index') }}" class="text-white">Consulter</a>
             </div>
         </div>
-        {{-- Nouveau card pour Blog --}}
+
+        {{-- Blog Posts --}}
         <div class="col-md-3">
             <div class="card card-body bg-secondary text-white mb-3">
                 <label>Total Blog Posts</label>
                 <h4>{{ $total_posts }}</h4>
                 <a href="{{ route('admin.blog.index') }}" class="text-white">Consulter</a>
+            </div>
+        </div>
+
+        {{-- Testimonials --}}
+        <div class="col-md-3">
+            <div class="card card-body bg-dark text-white mb-3">
+                <label>Total Témoignages</label>
+                <h4>{{ $total_testimonials }}</h4>
+                <a href="{{ route('testimonials.index') }}" class="text-white">Consulter</a>
             </div>
         </div>
     </div>

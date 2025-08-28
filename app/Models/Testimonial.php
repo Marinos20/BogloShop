@@ -26,4 +26,12 @@ class Testimonial extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Scope pour récupérer uniquement les témoignages approuvés.
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('is_approved', true);
+    }
 }
