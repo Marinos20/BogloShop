@@ -42,7 +42,7 @@ class TestimonialController extends Controller
             'is_approved' => false,
         ]);
 
-        return redirect()->route('testimonials.index')
-                         ->with('success', 'Merci ! Votre témoignage a été soumis et sera publié après validation.');
+        // Pas de redirect vers une autre page, on reste sur la même
+        return back()->with('success', 'Merci ! Votre témoignage a été soumis et sera publié après validation.');
     }
 }

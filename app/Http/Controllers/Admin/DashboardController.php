@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\Post;
 use App\Models\Testimonial;
+use App\Models\Comment; // ← ajouté
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -36,6 +37,9 @@ class DashboardController extends Controller
         // Total des témoignages
         $total_testimonials = Testimonial::count();
 
+        // ← AJOUT : total des commentaires
+        $total_comments = Comment::count();
+
         return view('admin.dashboard', [
             'total_product' => $total_product,
             'total_category' => $total_category,
@@ -47,7 +51,8 @@ class DashboardController extends Controller
             'thisMonthOrders' => $thisMonthOrders,
             'thisYearOrders' => $thisYearOrders,
             'total_posts' => $total_posts,
-            'total_testimonials' => $total_testimonials 
+            'total_testimonials' => $total_testimonials,
+            'total_comments' => $total_comments, // ← ajouté ici aussi
         ]);
     }
 }

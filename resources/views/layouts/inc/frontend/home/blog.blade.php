@@ -18,7 +18,6 @@
                     <div class="tp-blog-item-2 mb-40">
                         <div class="tp-blog-thumb-2 p-relative fix">
                             <a href="{{ route('blog.show', $post->slug) }}">
-                                <!-- Correction : utiliser thumbnail au lieu de image -->
                                 <img src="{{ asset('storage/uploads/blog/' . $post->thumbnail) }}" alt="{{ $post->title }}">
                             </a>
                             <div class="tp-blog-meta-date-2">
@@ -26,14 +25,23 @@
                             </div>
                         </div>
                         <div class="tp-blog-content-2 has-thumbnail">
-                            <div class="tp-blog-meta-2">
+                            <div class="tp-blog-meta-2 d-flex align-items-center">
                                 <span>
                                     <svg width="14" height="14" ...>...</svg>
                                 </span>
                                 <a href="#"> {{ $post->category->name ?? 'Uncategorized' }} </a>
+
+                                {{-- Ajout compteur de commentaires --}}
+                                @if($post->comments_count > 0)
+                                    <span class="ms-3 comments-count" title="{{ $post->comments_count }} commentaire(s)">
+                                        💬 {{ $post->comments_count }}
+                                    </span>
+                                @endif
                             </div>
                             <h3 class="tp-blog-title-2">
-                                <a href="{{ route('blog.show', $post->slug) }}">{{ $post->title }}</a>
+                                <a href="{{ route('blog.show', $post->slug) }}">
+                                    {{ \Illuminate\Support\Str::limit($post->title, 12, '...') }}
+                                </a>
                             </h3>
                         </div>
                     </div>
@@ -50,3 +58,21 @@
         </div>
     </div>
 </section>
+
+<style>
+/* Tronquer les titres trop longs sur 2 lignes avec ... */
+.tp-blog-title-2 a {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* nombre de lignes max */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.comments-count {
+    font-size: 0.9rem;
+    color: #555;
+    display: inline-flex;
+    align-items: center;
+}
+</style>

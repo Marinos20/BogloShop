@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Frontend\AuthController as FrontendAuthController;
 use App\Http\Controllers\Frontend\BlogController as FrontendBlogController;
@@ -19,9 +20,11 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PaymentController;
 use App\Http\Controllers\Frontend\ProfileController;
 use App\Http\Controllers\Frontend\WishlistController;
+use App\Http\Controllers\Frontend\CommentController as FrontendCommentController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SettingsController;
+use App\Models\Testimonial;
 use Illuminate\Support\Facades\Route;
 
 // ==========================
@@ -34,7 +37,15 @@ Route::get('/collection/{category_slug}', [FrontendController::class, 'products'
 Route::get('/collection/{category_slug}/{product_slug}', [FrontendController::class, 'product']);
 Route::get('/search', [FrontendController::class, 'search'])->name('search.products');
 Route::get('/about', [FrontendController::class, 'about'])->name('about');
-Route::get('/service', [FrontendController::class, 'service'])->name('service');
+
+Route::get('/service', function () {
+    $testimonials = Testimonial::with('user')
+                               ->where('is_approved', true)
+                               ->latest()
+                               ->get();
+    return view('frontend.service', compact('testimonials'));
+})->name('service');
+
 Route::get('/policy', [FrontendController::class, 'policy'])->name('policy');
 Route::get('/condition', [FrontendController::class, 'condition'])->name('condition');
 Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
@@ -54,6 +65,15 @@ Route::prefix('')->group(function () {
 // ==========================
 Route::get('/blog', [FrontendBlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [FrontendBlogController::class, 'show'])->name('blog.show');
+
+// ==========================
+// COMMENTAIRES FRONTEND
+// ==========================
+// Un seul contrôleur pour gérer commentaires et réponses, seulement pour les utilisateurs connectés
+Route::middleware('auth')->group(function () {
+    Route::post('/blog/{post}/comments', [FrontendCommentController::class, 'store'])
+         ->name('frontend.comments.store');
+});
 
 // ==========================
 // AUTH GUEST
@@ -122,6 +142,12 @@ Route::prefix('admin')->middleware(['auth', 'is_admin', 'admin_device'])->group(
     Route::get('/blog', [AdminBlogController::class, 'index'])->name('admin.blog.index');
     Route::get('/blog/create', [AdminBlogController::class, 'create'])->name('admin.blog.create');
     Route::get('/blog/edit/{post}', [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
+
+    // COMMENTS (ADMIN)
+    Route::get('/comments', [AdminCommentController::class, 'index'])->name('admin.comments.index');
+    Route::get('/comments/{comment}/edit', [AdminCommentController::class, 'edit'])->name('admin.comments.edit');
+    Route::patch('/comments/{comment}/toggle', [AdminCommentController::class, 'toggleApproval'])->name('admin.comments.toggle');
+    Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])->name('admin.comments.destroy');
 
     // TESTIMONIALS (ADMIN)
     Route::resource('testimonials', AdminTestimonialController::class)

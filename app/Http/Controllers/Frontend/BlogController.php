@@ -11,8 +11,12 @@ class BlogController extends Controller
     public function index()
     {
         $posts = Post::where('is_published', true)
+                     ->withCount(['comments' => function($query) {
+                         $query->whereNull('parent_id')      // seulement les commentaires racines
+                               ->where('is_approved', true); // seulement les approuvés
+                     }])
                      ->latest()
-                     ->paginate(9); // ✅ utilise paginate au lieu de get()
+                     ->paginate(9); // ✅ paginate pour la pagination
 
         return view('frontend.blog.index', compact('posts'));
     }
@@ -23,6 +27,10 @@ class BlogController extends Controller
         // Récupérer l'article
         $post = Post::where('slug', $slug)
                     ->where('is_published', true)
+                    ->withCount(['comments' => function($query) {
+                        $query->whereNull('parent_id')
+                              ->where('is_approved', true);
+                    }])
                     ->firstOrFail();
 
         // Récupérer les 5 derniers articles récents (hors article courant)

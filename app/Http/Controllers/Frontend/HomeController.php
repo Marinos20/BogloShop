@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Post;
-use App\Models\Testimonial; // ajouter le modèle Testimonial
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -18,6 +18,10 @@ class HomeController extends Controller
             ->get();
 
         $posts = Post::where('is_published', 1)
+            ->withCount(['comments' => function($query) {
+                $query->whereNull('parent_id')      // seulement les commentaires racines
+                      ->where('is_approved', true); // seulement les approuvés
+            }])
             ->latest()
             ->take(6)
             ->get();

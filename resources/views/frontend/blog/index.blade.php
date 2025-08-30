@@ -28,8 +28,14 @@
                             </div>
                         </div>
                         <div class="tp-blog-content-2 has-thumbnail">
-                            <div class="tp-blog-meta-2">
+                            <div class="tp-blog-meta-2 d-flex align-items-center">
                                 <a href="#">{{ $post->category->name ?? 'Uncategorized' }}</a>
+
+                                @if($post->comments_count > 0)
+                                    <span class="ms-2 comments-count" title="{{ $post->comments_count }} commentaire(s)">
+                                        💬 {{ $post->comments_count }}
+                                    </span>
+                                @endif
                             </div>
                             <h3 class="tp-blog-title-2">
                                 <a href="{{ route('blog.show', $post->slug) }}">{{ $post->title }}</a>

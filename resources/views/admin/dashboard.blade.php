@@ -92,5 +92,14 @@
                 <a href="{{ route('testimonials.index') }}" class="text-white">Consulter</a>
             </div>
         </div>
+
+        {{-- Comments --}}
+        <div class="col-md-3">
+            <div class="card card-body bg-info text-white mb-3">
+                <label>Total Commentaires</label>
+                <h4>{{ $total_comments }}</h4>
+                <a href="{{ route('admin.comments.index') }}" class="text-white">Consulter</a>
+            </div>
+        </div>
     </div>
 @endsection

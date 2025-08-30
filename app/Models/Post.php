@@ -28,9 +28,22 @@ class Post extends Model
         'published_at' => 'datetime',
     ];
 
-    // Relation avec User (auteur du post)
+    /**
+     * Relation avec User (auteur du post)
+     */
     public function author()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Relation avec Comment (uniquement les commentaires racine)
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)
+                    ->whereNull('parent_id') // uniquement les commentaires principaux
+                    ->where('is_approved', true) // uniquement les approuvés
+                    ->latest(); // les plus récents en premier
     }
 }

@@ -90,6 +90,22 @@
             </div>
         </li>
 
+        <!-- Nouveau menu Commentaires -->
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#ui-basic-comments" aria-expanded="false" aria-controls="ui-basic-comments">
+                <i class="mdi mdi-comment-text-multiple-outline menu-icon"></i>
+                <span class="menu-title">Commentaires</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic-comments">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="{{ route('admin.comments.index') }}">Voir les commentaires</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
         <li class="nav-item">
             <a class="nav-link" href="javascript:void(0)">
                 <i class="mdi mdi-cog menu-icon"></i>
