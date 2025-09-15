@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes; // 👈 importer SoftDeletes
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes; // 👈 activer SoftDeletes
+    use HasFactory, SoftDeletes;
 
     protected $table = 'products';
 
@@ -39,7 +39,7 @@ class Product extends Model
         'sale_ends_at' => 'datetime',
     ];
 
-    protected $dates = ['deleted_at']; // 👈 important pour que Laravel gère la date de suppression
+    protected $dates = ['deleted_at'];
 
     public function productImages()
     {
@@ -62,5 +62,21 @@ class Product extends Model
     public function productSizes()
     {
         return $this->hasMany(ProductSize::class, 'product_id', 'id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'product_id', 'id');
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class, 'product_id', 'id')
+                    ->where('status', 'approved');
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->approvedReviews()->avg('rating') ?? 0;
     }
 }
