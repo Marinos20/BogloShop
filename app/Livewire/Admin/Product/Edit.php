@@ -1,81 +1,194 @@
 <?php
 
-namespace App\Livewire\Admin\Blog;
+namespace App\Livewire\Admin\Product;
 
-use App\Models\Post;
+use App\Models\Category;
+use App\Models\Color;
+use App\Models\Product;
+use App\Models\productColor;
+use App\Models\ProductImage;
+use App\Models\ProductSize;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
 
 class Edit extends Component
 {
     use WithFileUploads;
 
-    public Post $post;
+    public $categories;
 
-    public $title;
-    public $excerpt;
-    public $content;
-    public $is_published = false;
-    public $published_at;
-    public $thumbnail; // nouvelle image
+    public Product $product;
+
+    public $colors;
+
+    public $category_id;
+    public $name;
+    public $small_description;
+    public $description;
+    public $original_price;
+    public $selling_price;
+    public $quantity;
+    public $trending;
+    public $status;
     public $meta_title;
     public $meta_keyword;
     public $meta_description;
+    public $image = [];
+    public $color = [];
+    public $size = [];
+    public $type;
+    public $material;
+    public $style;
 
     protected $rules = [
-        'title' => 'required|string|max:255',
-        'excerpt' => 'nullable|string',
-        'content' => 'required|string',
-        'thumbnail' => 'nullable|image|max:2048',
-        'meta_title' => 'nullable|string',
-        'meta_keyword' => 'nullable|string',
-        'meta_description' => 'nullable|string',
+        'category_id' => ['required', 'integer'],
+        'name' => ['required', 'string'],
+        'small_description' => ['required', 'string'],
+        'description' => ['required', 'string'],
+        'original_price' => ['required', 'integer'],
+        'selling_price' => ['required', 'integer'],
+        'quantity' => ['required', 'integer'],
+        'image' => ['array', 'min:0'],
+        'image.*' => ['extensions:jpg,png,jpeg'],
+        'size' => [''],
+        'type' => ['required'],
+        'material' => ['required'],
+        'style' => ['required'],
     ];
 
-    public function mount(Post $post)
+    public function mount(Product $product)
     {
-        $this->post = $post;
+        $this->categories = Category::select(['id', 'name'])->get();
+        $product_color = $product->productColors->pluck('color_id')->toArray();
+        $this->colors = Color::whereNotIn('id', $product_color)->select(['id', 'name'])->get();
 
-        $this->title = $post->title;
-        $this->excerpt = $post->excerpt;
-        $this->content = $post->content;
-        $this->is_published = $post->is_published;
-        $this->published_at = $post->published_at ? $post->published_at->format('Y-m-d\TH:i') : null;
-        $this->meta_title = $post->meta_title;
-        $this->meta_keyword = $post->meta_keyword;
-        $this->meta_description = $post->meta_description;
+        $this->category_id = $product->category_id;
+        $this->name = $product->name;
+        $this->description = $product->description;
+        $this->small_description = $product->small_description;
+        $this->status = $product->status;
+        $this->trending = $product->trending;
+        $this->quantity = $product->quantity;
+        $this->selling_price = $product->selling_price;
+        $this->original_price = $product->original_price;
+        $this->type = $product->type;
+        $this->material = $product->material;
+        $this->style = $product->style;
+
+    }
+
+    public function deleteImage(ProductImage $singleImage)
+    {
+
+        if (File::exists('storage/uploads/products/' . $singleImage->image)) {
+
+            File::delete('storage/uploads/products/' . $singleImage->image);
+        }
+        $singleImage->delete();
+    }
+
+    public function updateColorQuantity( $colorId, $newquantity){
+
+        $color = Color::where('id', $colorId)->select(['id', 'name'])->first();
+        $color->update([
+            'quantity' => $newquantity,
+        ]);
+
+        session()->flash('message', 'Color quantity updated, navigate back to the section to continue');
+
+    }
+
+    public function deleteColor(productColor $color){
+        $color->delete();
+
+        $product_color = $this->product->productColors->pluck('color_id')->toArray();
+        $this->colors = Color::whereNotIn('id', $product_color)->select(['id', 'name'])->get();
+
+        session()->flash('message', 'Color deleted, navigate back to the section to continue');
+    }
+
+    public function deleteSize(ProductSize $size){
+        $size->delete();
+
+
+        session()->flash('message', 'Size deleted, navigate back to the section to continue');
     }
 
     public function update()
     {
-        $validatedData = $this->validate();
+        $updatedProduct = $this->validate();
 
-        $validatedData['slug'] = Str::slug($this->title);
-        $validatedData['is_published'] = $this->is_published ? 1 : 0;
-        $validatedData['published_at'] = $this->published_at;
+        $updatedProduct['slug'] = Str::slug($updatedProduct['name']);
 
-        // gérer le thumbnail
-        if ($this->thumbnail) {
-            // supprimer l’ancienne image si elle existe
-            if ($this->post->thumbnail && File::exists('storage/uploads/blog/' . $this->post->thumbnail)) {
-                File::delete('storage/uploads/blog/' . $this->post->thumbnail);
+        $updatedProduct['trending'] = $this->trending ? 1 : 0;
+
+        $updatedProduct['status'] = $this->status ? 1 : 0;
+
+        $updatedProduct['meta_title'] = $this->name;
+
+        $updatedProduct['meta_keyword'] = $this->name;
+
+        $updatedProduct['meta_description'] = $this->description;
+
+        $product = $this->product;
+
+
+        if ($product) {
+
+            if ($this->image) {
+
+                $i = 1;
+
+                foreach ($this->image as $image) {
+
+                    $file = $image;
+
+                    $fileName = time() . $i++ . '.' . $file->getClientOriginalExtension();
+
+                    $file->storeAs('uploads/products/', $fileName, 'public');
+
+                    $this->product->productImages()->create(['image' => $fileName]);
+                }
+
             }
 
-            $fileName = time() . '.' . $this->thumbnail->getClientOriginalExtension();
-            $this->thumbnail->storeAs('uploads/blog', $fileName, 'public');
-            $validatedData['thumbnail'] = $fileName;
+            if ($this->color) {
+                foreach ($this->color as $color) {
+                    $product->productColors()->create([
+                        'color_id' => $color,
+                    ]);
+                }
+            }
+
+            if ($this->size) {
+                foreach ($this->size as $size) {
+                    $product->productSizes()->create([
+                        'size' => $size
+                    ]);
+                }
+            }
+
+            $product->update($updatedProduct);
+
+            session()->flash('message', 'Product Updated Successfuly');
+
+            return $this->redirect(route('product.index'));
+
+        } else {
+            session()->flash('message', 'This Product has not being created');
+
+            return $this->redirect(route('product.index'));
         }
-
-        $this->post->update($validatedData);
-
-        session()->flash('success', 'Post Updated Successfully');
-        return redirect()->route('admin.blog.index');
     }
 
     public function render()
     {
-        return view('livewire.admin.blog.edit');
+        $this->categories = Category::select(['id', 'name'])->get();
+        $product_color = $this->product->productColors->pluck('color_id')->toArray();
+        $this->colors = Color::whereNotIn('id', $product_color)->select(['id', 'name'])->get();
+
+        return view('livewire.admin.product.edit');
     }
 }

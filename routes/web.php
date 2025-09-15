@@ -69,10 +69,12 @@ Route::get('/blog/{slug}', [FrontendBlogController::class, 'show'])->name('blog.
 // ==========================
 // COMMENTAIRES FRONTEND
 // ==========================
-// Un seul contrôleur pour gérer commentaires et réponses, seulement pour les utilisateurs connectés
 Route::middleware('auth')->group(function () {
     Route::post('/blog/{post}/comments', [FrontendCommentController::class, 'store'])
          ->name('frontend.comments.store');
+
+    Route::get('/blog/{post}/comments/load', [FrontendCommentController::class, 'loadMore'])
+         ->name('frontend.comments.load');
 });
 
 // ==========================
@@ -102,7 +104,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('verified')->group(function () {
         Route::get('/profile', [ProfileController::class, 'index']);
+
+        // ✅ Route Track Order corrigée pour utiliser le paramètre de route
         Route::get('/track-order/{tracking_no}', [ProfileController::class, 'track'])->name('track_order');
+
         Route::get('/checkout/{product_slug}', [CheckoutController::class, 'single'])->name('singleCheckout');
         Route::get('/checkout', [CheckoutController::class, 'index']);
         Route::get('/payment', [PaymentController::class, 'pay'])->name('payment');

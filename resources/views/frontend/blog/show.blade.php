@@ -58,42 +58,45 @@
                 <div class="blog-comments mt-5">
                     <h4>{{ $post->comments()->where('is_approved', true)->count() }} Commentaire(s)</h4>
 
-                    <!-- Liste des commentaires racines -->
-                    @foreach ($post->comments()->whereNull('parent_id')->where('is_approved', true)->latest()->get() as $comment)
-                        <div class="comment mb-3 ps-3 border-start">
-                            <p><strong>{{ $comment->author_name }}</strong> 
-                               <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
-                            </p>
-                            <p>{{ $comment->content }}</p>
+                    <div id="comments-container">
+                        @foreach ($post->comments()->whereNull('parent_id')->where('is_approved', true)->latest()->take(5)->get() as $comment)
+                            <div class="comment mb-3 ps-3 border-start">
+                                <p><strong>{{ $comment->author_name }}</strong> 
+                                   <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                                </p>
+                                <p>{{ $comment->content }}</p>
 
-                            <!-- Affichage des réponses -->
-                            @foreach ($comment->replies()->where('is_approved', true)->latest()->get() as $reply)
-                                <div class="reply mb-2 ps-4 border-start">
-                                    <p><strong>{{ $reply->author_name }}</strong> 
-                                       <small class="text-muted">{{ $reply->created_at->diffForHumans() }}</small>
-                                    </p>
-                                    <p>{{ $reply->content }}</p>
-                                </div>
-                            @endforeach
+                                <!-- Affichage des réponses -->
+                                @foreach ($comment->replies()->where('is_approved', true)->latest()->get() as $reply)
+                                    <div class="reply mb-2 ps-4 border-start">
+                                        <p><strong>{{ $reply->author_name }}</strong> 
+                                           <small class="text-muted">{{ $reply->created_at->diffForHumans() }}</small>
+                                        </p>
+                                        <p>{{ $reply->content }}</p>
+                                    </div>
+                                @endforeach
 
-                            @auth
-                                <!-- Formulaire pour répondre -->
-                                <a href="#" class="text-primary small reply-toggle" data-comment="{{ $comment->id }}">Répondre</a>
-                                <form action="{{ route('frontend.comments.store', $post->id) }}" method="POST" 
-                                      class="reply-form mt-2 d-none" id="reply-form-{{ $comment->id }}">
-                                    @csrf
-                                    <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                    <input type="hidden" name="author_name" value="{{ auth()->user()->name }}">
-                                    <input type="hidden" name="author_email" value="{{ auth()->user()->email }}">
-                                    <textarea name="content" rows="2" class="form-control mb-2" 
-                                              placeholder="Votre réponse..." required></textarea>
-                                    <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
-                                </form>
-                            @else
-                                <p class="text-muted small">Vous devez <a href="{{ route('login') }}">vous connecter</a> pour répondre.</p>
-                            @endauth
-                        </div>
-                    @endforeach
+                                @auth
+                                    <a href="#" class="text-primary small reply-toggle" data-comment="{{ $comment->id }}">Répondre</a>
+                                    <form action="{{ route('frontend.comments.store', $post->id) }}" method="POST" 
+                                          class="reply-form mt-2 d-none" id="reply-form-{{ $comment->id }}">
+                                        @csrf
+                                        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                        <input type="hidden" name="author_name" value="{{ auth()->user()->name }}">
+                                        <input type="hidden" name="author_email" value="{{ auth()->user()->email }}">
+                                        <textarea name="content" rows="2" class="form-control mb-2" placeholder="Votre réponse..." required></textarea>
+                                        <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
+                                    </form>
+                                @endauth
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if($post->comments()->whereNull('parent_id')->where('is_approved', true)->count() > 5)
+                        <button id="load-more-comments" class="btn btn-outline-primary btn-sm mt-3" data-post="{{ $post->id }}" data-offset="5">
+                            Charger plus de commentaires
+                        </button>
+                    @endif
 
                     <!-- Formulaire pour nouveau commentaire -->
                     @auth
@@ -152,6 +155,27 @@
             form.classList.toggle('d-none');
         });
     });
+
+    // AJAX Charger plus de commentaires
+    const loadMoreBtn = document.getElementById('load-more-comments');
+    if(loadMoreBtn){
+        loadMoreBtn.addEventListener('click', function(){
+            const postId = this.dataset.post;
+            let offset = parseInt(this.dataset.offset);
+
+            fetch(`/blog/${postId}/comments/load?offset=${offset}`)
+                .then(res => res.text())
+                .then(html => {
+                    if(html.trim() === ''){
+                        this.style.display = 'none';
+                    } else {
+                        document.getElementById('comments-container').insertAdjacentHTML('beforeend', html);
+                        offset += 5;
+                        this.dataset.offset = offset;
+                    }
+                });
+        });
+    }
 </script>
 
 <style>

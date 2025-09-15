@@ -56,29 +56,55 @@
                     </thead>
                     <tbody>
                         @foreach ($order->orderItems as $orderItem)
+                            @php
+                                $product = $orderItem->products;
+                            @endphp
                             <tr>
                                 <td width="10%">{{ $orderItem->id }}</td>
                                 <td width="10%">
-                                    @if ($orderItem->products->productImages)
-                                        <img src="{{ asset('storage/uploads/products/' . $orderItem->products->productImages[0]->image) }}"
-                                            width="50px" height="50px" alt="{{ $orderItem->products->name }}">
+                                    @if ($product && !$product->trashed() && $product->productImages->isNotEmpty())
+                                        <img src="{{ asset('storage/uploads/products/' . $product->productImages[0]->image) }}"
+                                             width="50px" height="50px" alt="{{ $product->name }}">
                                     @else
-                                        <img src="" width="50px" height="50px" alt="">
+                                        <img src="{{ asset('images/no-image.png') }}" width="50px" height="50px" alt="Produit retiré">
                                     @endif
                                 </td>
-                                <td>{{ $orderItem->products->name }}</td>
+                                <td>
+                                    @if ($product && !$product->trashed())
+                                        {{ $product->name }}
+                                    @else
+                                        Produit retiré
+                                    @endif
+                                </td>
                                 <td>{{ $orderItem->color }}</td>
                                 <td>{{ $orderItem->size }}</td>
-                                <td>{{ number_format($orderItem->products->selling_price, 2) }}</td>
+                                <td>
+                                    @if ($product && !$product->trashed())
+                                        {{ number_format($product->selling_price, 2) }}
+                                    @else
+                                        N/A
+                                    @endif
+                                </td>
                                 <td>{{ $orderItem->quantity }}</td>
-                                <td>{{ number_format($orderItem->quantity * $orderItem->products->selling_price, 2) }}
+                                <td>
+                                    @if ($product && !$product->trashed())
+                                        {{ number_format($orderItem->quantity * $product->selling_price, 2) }}
+                                    @else
+                                        N/A
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
+                        @php
+                            $totalAmount = $order->orderItems->reduce(function ($carry, $item) {
+                                $product = $item->products;
+                                return $carry + ($product && !$product->trashed() ? $item->quantity * $product->selling_price : 0);
+                            }, 0);
+                        @endphp
                         <td colspan="7">Total Amount:</td>
-                        <td>{{ number_format($order->total_price - 3000) }}</td>
+                        <td>{{ number_format($totalAmount) }}</td>
                     </tfoot>
                 </table>
             </div>

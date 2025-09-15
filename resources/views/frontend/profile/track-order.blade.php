@@ -21,7 +21,7 @@
     <!-- breadcrumb area end -->
 
     <!-- order area start -->
-    <livewire:frontend.profile.track-order :order="$order" />
+    <livewire:frontend.profile.track-order :tracking-no="$trackingNo" />
     <!-- order area end -->
 
 @endsection

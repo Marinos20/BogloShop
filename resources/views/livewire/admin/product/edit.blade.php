@@ -2,8 +2,8 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h3>Editer Produits
-                    <a href="{{ route('product.index') }}" class="btn btn-primary btn-sm float-right">Retour</a>
+                <h3>Edit Products
+                    <a href="{{ route('product.index') }}" class="btn btn-primary btn-sm float-right">Back</a>
                 </h3>
             </div>
             <div class="card-body">
@@ -18,18 +18,18 @@
 
                 @include('layouts.inc.admin.flash-message')
 
-                <form wire:submit.prevent="update" enctype="multipart/form-data" method="post">
+                <form wire:submit="update" enctype="multipart/form-data" method="post">
 
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="images-tab" data-bs-toggle="tab"
                                 data-bs-target="#images-tab-pane" type="button" role="tab"
-                                aria-controls="images-tab-pane" aria-selected="true">Images du Produits</button>
+                                aria-controls="images-tab-pane" aria-selected="true">Product Images</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="product-tab" data-bs-toggle="tab"
                             data-bs-target="#product-tab-pane" type="button" role="tab"
-                            aria-controls="product-tab-pane" aria-selected="false">Produits</button>
+                            aria-controls="product-tab-pane" aria-selected="false">Product</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="details-tab" data-bs-toggle="tab"
@@ -39,12 +39,12 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="colors-tab" data-bs-toggle="tab"
                                 data-bs-target="#colors-tab-pane" type="button" role="tab"
-                                aria-controls="colors-tab-pane" aria-selected="false">Couleur du Produit</button>
+                                aria-controls="colors-tab-pane" aria-selected="false">Product Color</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="size-tab" data-bs-toggle="tab"
                                 data-bs-target="#size-tab-pane" type="button" role="tab"
-                                aria-controls="size-tab-pane" aria-selected="false">Taille du Produit</button>
+                                aria-controls="size-tab-pane" aria-selected="false">Product Size</button>
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent">
@@ -53,7 +53,7 @@
                         <div class="tab-pane fade border p-3 mb-2 show active" id="images-tab-pane" role="tabpanel"
                             aria-labelledby="images-tab" tabindex="0">
                             <div class="mb-3">
-                                <label>Téléverser Images Produits</label>
+                                <label>Upload Product Images</label>
                                 <input type="file" wire:model.live="image" multiple class="form-control">
                                 @error('image')
                                     <span class="text-sm text-danger"><small>{{ $message }}</small></span>
@@ -70,9 +70,9 @@
                                 @endforeach
                             </div>
                             @else
-                            <h3>Aucune image ajoutée</h3>
+                            <h3>No Images Added</h3>
                             @endif
-                            <h3>Nouvelles images</h3>
+                            <h3>New Images</h3>
                             <div class="row">
                                 @if ($image)
                                     @foreach ($image as $singleImage)
@@ -88,7 +88,7 @@
                         <div class="tab-pane fade border p-3 mb-2" id="product-tab-pane" role="tabpanel"
                             aria-labelledby="product-tab" tabindex="0">
                             <div class="mb-3">
-                                <label>Categories</label>
+                                <label>Category</label>
                                 <select wire:model="category_id" class="form-control">
                                     @foreach ($categories as $category)
                                         <option {{ $product->category_id == $category->id ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
@@ -100,7 +100,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label>Nom du Produit</label>
+                                <label>Product Name</label>
                                 <input value="{{ $product->name }}" type="text" wire:model="name" class="form-control">
                                 @error('name')
                                     <span class="text-sm text-danger"><small>{{ $message }}</small></span>
@@ -108,7 +108,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label> Brève description (500 mots)</label>
+                                <label> Small Description (500 Words)</label>
                                 <textarea rows="4" wire:model="small_description" class="form-control">{{ $product->small_description }}</textarea>
                                 @error('small_description')
                                     <span class="text-sm text-danger"><small>{{ $message }}</small></span>
@@ -124,13 +124,16 @@
                             </div>
                         </div>
 
+
+
                         {{-- Details --}}
+
                         <div class="tab-pane fade border p-3 mb-2" id="details-tab-pane" role="tabpanel"
                             aria-labelledby="details-tab" tabindex="0">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label>Prix d’origine</label>
+                                        <label>Original Price</label>
                                         <input type="text" value="{{ $product->original_price }}" wire:model="original_price" class="form-control">
                                         @error('original_price')
                                             <span class="text-sm text-danger"><small>{{ $message }}</small></span>
@@ -139,8 +142,8 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label>Prix de vente</label>
-                                        <input type="text" value="{{ $product->selling_price }}" wire:model="selling_price" class="form-control">
+                                        <label>Selling Price</label>
+                                        <input type="text" value="{{ $product->selling_price }}"wire:model="selling_price" class="form-control">
                                         @error('selling_price')
                                             <span class="text-sm text-danger"><small>{{ $message }}</small></span>
                                         @enderror
@@ -148,49 +151,16 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label>Quantité</label>
+                                        <label>Quantity</label>
                                         <input type="number" wire:model="quantity" value="{{ $product->quantity }}" class="form-control">
                                         @error('quantity')
                                             <span class="text-sm text-danger"><small>{{ $message }}</small></span>
                                         @enderror
                                     </div>
                                 </div>
-
-                                {{-- Ajout dates période de vente --}}
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="sale_starts_at">Date de début de la période de vente</label>
-                                        <input
-                                            type="datetime-local"
-                                            id="sale_starts_at"
-                                            wire:model.defer="sale_starts_at"
-                                            class="form-control @error('sale_starts_at') is-invalid @enderror"
-                                            value="{{ old('sale_starts_at', $sale_starts_at) }}"
-                                        >
-                                        @error('sale_starts_at')
-                                            <span class="text-danger"><small>{{ $message }}</small></span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="sale_ends_at">Date de fin de la période de vente</label>
-                                        <input
-                                            type="datetime-local"
-                                            id="sale_ends_at"
-                                            wire:model.defer="sale_ends_at"
-                                            class="form-control @error('sale_ends_at') is-invalid @enderror"
-                                            value="{{ old('sale_ends_at', $sale_ends_at) }}"
-                                        >
-                                        @error('sale_ends_at')
-                                            <span class="text-danger"><small>{{ $message }}</small></span>
-                                        @enderror
-                                    </div>
-                                </div>
-
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label>Tendance</label><br>
+                                        <label>Trending</label><br>
                                         <input type="checkbox" wire:model="trending" {{ $product->trending ? 'checked' : '' }}
                                             style="width: 50px; height: 50px;">
                                         @error('trending')
@@ -235,21 +205,21 @@
                                 <div class="col-md-2">
 
                                     <input type="radio" {{ $product->material === "Leather" ? 'checked' : '' }} id="Leather" wire:model="material" value="Leather">
-                                    <label for="Leather">Traditionnel</label>
+                                    <label for="Leather">Leather</label>
                                 </div>
                                 <div class="col-md-2">
 
                                     <input type="radio" {{ $product->material === "Synthetic" ? 'checked' : '' }} id="Synthetic" wire:model="material" value="Synthetic">
-                                    <label for="Synthetic">Pur Naturel</label>
+                                    <label for="Synthetic">Synthetic</label>
                                 </div>
                                 <div class="col-md-2">
 
                                     <input type="radio" {{ $product->material === "Suede" ? 'checked' : '' }} id="Suede" wire:model="material" value="Suede">
-                                    <label for="Suede">Mixte</label>
+                                    <label for="Suede">Suede</label>
                                 </div>
                                 <div class="col-md-2">
                                     <input type="radio" {{ $product->material === "Canvas" ? 'checked' : '' }} id="Canvas" wire:model="material" value="Canvas">
-                                    <label for="Canvas">Moderne </label>
+                                    <label for="Canvas">Canvas</label>
                                 </div>
                             </div>
 
@@ -269,7 +239,7 @@
                                 <div class="col-md-2">
 
                                     <input type="radio" {{ $product->style === "Trendy" ? 'checked' : '' }} id="Trendy" wire:model="style" value="Trendy">
-                                    <label for="Trendy">Haut Spirituelle</label>
+                                    <label for="Trendy">Trendy</label>
                                 </div>
                                 <div class="col-md-2">
                                     <input type="radio" {{ $product->style === "Sporty" ? 'checked' : '' }} id="Sporty" wire:model="style" value="Sporty">
@@ -291,7 +261,7 @@
                                         </div>
                                     @empty
                                         <div class="col-md-12">
-                                            <h1>Aucune couleur trouvée</h1>
+                                            <h1>No Colors found</h1>
                                         </div>
                                     @endforelse
                                 </div>
@@ -302,9 +272,9 @@
                                 <table class="table table-sm table-bordered">
                                     <thead>
                                         <tr>
-                                            <td>Nom de la couleur</td>
-                                            <td>Couleur</td>
-                                            <td>Supprimer</td>
+                                            <td>Color Name</td>
+                                            <td>Color</td>
+                                            <td>Delete</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -315,7 +285,7 @@
                                             <td><div style="height: 30px; width: 30px; background-color: {{ $color->color->code ?? $color->name }}"></div></td>
 
                                             <td>
-                                                <button type="button" wire:click.prevent="deleteColor({{ $color }})" class="btn btn-danger btn-sm text-white">Supprimer</button>
+                                                <button type="button" wire:click.prevent="deleteColor({{ $color }})" class="btn btn-danger btn-sm text-white">Delete</button>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -330,7 +300,7 @@
                         <div class="tab-pane fade border p-3 mb-2" id="size-tab-pane" role="tabpanel"
                             aria-labelledby="size-tab" tabindex="0">
                             <div class="mb-3">
-                                <label>Selectionner Taille Produit</label>
+                                <label>Select Shoe Size</label>
                                 <div class="row">
                                     @for ($size = 20; $size <= 70; $size++)
                                         @if(!in_array($size, $product->productSizes->pluck('size')->toArray()))
@@ -348,8 +318,8 @@
                                 <table class="table table-sm table-bordered">
                                     <thead>
                                         <tr>
-                                            <td>Taille</td>
-                                            <td>Supprimer</td>
+                                            <td>Size</td>
+                                            <td>Delete</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -357,7 +327,7 @@
                                         <tr>
                                             <td>{{ $size->size }}</td>
                                             <td>
-                                                <button type="button" wire:click.prevent="deleteSize({{ $size }})" class="btn btn-danger btn-sm text-white">Supprimer</button>
+                                                <button type="button" wire:click.prevent="deleteSize({{ $size }})" class="btn btn-danger btn-sm text-white">Delete</button>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -370,9 +340,9 @@
                     </div>
                     <div>
                         <button wire:loading.remove wire:target="update" class="btn btn-primary float-right" type="submit">
-                            Enregistrer Produit
+                            Save Product
                         </button>
-                        <button wire:loading wire:target="update" disabled class="btn btn-info btn-icon-text float-right"></i>Enregistrement du produit<i class="mdi mdi-loading mdi-spin btn-icon-prepend"></i></button>
+                        <button wire:loading wire:target="update" disabled class="btn btn-info btn-icon-text float-right"></i>Saving Product<i class="mdi mdi-loading mdi-spin btn-icon-prepend"></i></button>
                     </div>
                 </form>
             </div>
