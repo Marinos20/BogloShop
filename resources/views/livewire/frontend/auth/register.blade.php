@@ -71,7 +71,7 @@
                    <div class="tp-login-suggetions d-sm-flex align-items-center justify-content-between mb-20">
                       <div class="tp-login-remeber">
                          <input wire:model="terms" id="terms" type="checkbox" class="@error('terms') border: 1px solid red @enderror">
-                         <label for="terms">J'accepte les conditions du service &amp; <a href="#">Politique de confidentialité</a>.</label>
+                         <label for="terms">J'accepte les conditions du service &amp; <a href="{{ route('policy') }}">Politique de confidentialité</a>.</label>
                          @error('terms')
                                 <span class="text-sm text-danger">{{ $message }}</span>
                            @enderror

@@ -17,6 +17,8 @@
                     <form wire:submit.prevent="resetPassword">
                         <div class="tp-login-option">
                             <div class="tp-login-input-wrapper">
+
+                                <!-- Email -->
                                 <div class="tp-login-input-box">
                                     <div class="tp-login-input">
                                         <input wire:model="email" type="email" placeholder="votremail@mail.com">
@@ -26,24 +28,37 @@
                                     </div>
                                     @error('email') <span class="text-sm text-danger">{{ $message }}</span> @enderror
                                 </div>
-                                <div class="tp-login-input-box">
+
+                                <!-- Nouveau mot de passe -->
+                                <div class="tp-login-input-box position-relative">
                                     <div class="tp-login-input">
-                                        <input wire:model="password" type="password" placeholder="Nouveau mot de passe">
+                                        <input id="password" wire:model="password" type="password" placeholder="Nouveau mot de passe">
+                                        <span class="tp-login-input-eye" onclick="togglePassword('password')">
+                                            👁️
+                                        </span>
                                     </div>
                                     <div class="tp-login-input-title">
                                         <label for="password">Mot de passe</label>
                                     </div>
                                     @error('password') <span class="text-sm text-danger">{{ $message }}</span> @enderror
                                 </div>
-                                <div class="tp-login-input-box">
+
+                                <!-- Confirmer mot de passe -->
+                                <div class="tp-login-input-box position-relative">
                                     <div class="tp-login-input">
-                                        <input wire:model="password_confirmation" type="password" placeholder="Confirmer mot de passe">
+                                        <input id="password_confirmation" wire:model="password_confirmation" type="password" placeholder="Confirmer mot de passe">
+                                        <span class="tp-login-input-eye" onclick="togglePassword('password_confirmation')">
+                                            👁️
+                                        </span>
                                     </div>
                                     <div class="tp-login-input-title">
                                         <label for="password_confirmation">Confirmer mot de passe</label>
                                     </div>
+                                    @error('password_confirmation') <span class="text-sm text-danger">{{ $message }}</span> @enderror
                                 </div>
+
                             </div>
+
                             <div class="tp-login-bottom">
                                 <button wire:loading.remove wire:target="resetPassword" type="submit" class="tp-login-btn w-100">Réinitialiser le mot de passe</button>
                                 <button wire:loading wire:target="resetPassword" type="button" class="tp-login-btn w-100">Réinitialisation en cours...</button>
@@ -54,4 +69,15 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            if (input.type === "password") {
+                input.type = "text";
+            } else {
+                input.type = "password";
+            }
+        }
+    </script>
 </section>
