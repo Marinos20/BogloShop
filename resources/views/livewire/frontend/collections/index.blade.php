@@ -81,8 +81,8 @@
                                                     <span><i class="fa-solid fa-star"></i></span>
                                                  </div>
                                                  <div class="tp-product-price-wrapper-2">
-                                                    <span class="tp-product-price-2 new-price">₦{{ number_format($product->selling_price, 2) }}</span>
-                                                    <span class="tp-product-price-2 old-price">₦{{ number_format($product->original_price, 2) }}</span>
+                                                    <span class="tp-product-price-2 new-price"> ${{ number_format($product->selling_price, 2) }}</span>
+                                                    <span class="tp-product-price-2 old-price"> ${{ number_format($product->original_price, 2) }}</span>
                                                  </div>
                                               </div>
                                            </div>

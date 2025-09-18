@@ -10,7 +10,7 @@
           <div class="col-xl-6 col-lg-8">
              <div class="tp-login-wrapper">
                 <div class="tp-login-top text-center mb-30">
-                   <h3 class="tp-login-title">Connexion à la boutique spirituelle Boglo.</h3>
+                   <h3 class="tp-login-title">Connexion à  Boglo.</h3>
                    <p>Vous n'avez pas de compte ? <span><a href="{{ url('/register') }}">Créez un compte gratuit.</a></span></p>
                 </div>
                 <form wire:submit="store">
@@ -62,9 +62,9 @@
                          <input id="remeber" type="checkbox">
                          <label for="remeber">Se souvenir de moi</label>
                       </div>
-                      {{-- <div class="tp-login-forgot">
-                         <a href="forgot.html">Mot de passe oublié ?</a>
-                      </div> --}}
+                       <div class="tp-login-forgot">
+                         <a href="{{ route('password.request') }}">Mot de passe oublié ?</a>
+                      </div> 
                    </div>
                    <div class="tp-login-bottom">
                       <button wire:loading.disable wire:loading.remove wire:target="store" type="submit" class="tp-login-btn w-100">Connexion</button>

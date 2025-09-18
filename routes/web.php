@@ -83,6 +83,13 @@ Route::middleware('auth')->group(function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [FrontendAuthController::class, 'login'])->name('login');
     Route::get('/register', [FrontendAuthController::class, 'register'])->name('register');
+    // Forgot Password
+    Route::get('/forgot-password', [FrontendAuthController::class, 'forgotPassword'])->name('password.request');
+    Route::post('/forgot-password', [FrontendAuthController::class, 'sendResetLink'])->name('password.email');
+
+    // Reset Password
+    Route::get('/reset-password/{token}', [FrontendAuthController::class, 'resetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [FrontendAuthController::class, 'resetPassword'])->name('password.update');
 });
 
 // ==========================
